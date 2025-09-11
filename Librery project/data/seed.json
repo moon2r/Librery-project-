@@ -1,0 +1,127 @@
+{
+  "authors": [
+    {
+      "id": "a1",
+      "name": "Айзек Азимов"
+    },
+    {
+      "id": "a2",
+      "name": "Стивен Кинг"
+    }
+  ],
+  "books": [
+    {
+      "id": "b1",
+      "title": "Основание",
+      "author_ids": [
+        "a1"
+      ],
+      "genres": [
+        "g1"
+      ],
+      "tags": [
+        "t1"
+      ],
+      "year": 1951
+    },
+    {
+      "id": "b2",
+      "title": "Оно",
+      "author_ids": [
+        "a2"
+      ],
+      "genres": [
+        "g2"
+      ],
+      "tags": [
+        "t2"
+      ],
+      "year": 1986
+    }
+  ],
+  "users": [
+    {
+      "id": "u1",
+      "name": "User 1"
+    },
+    {
+      "id": "u2",
+      "name": "User 2"
+    }
+  ],
+  "ratings": [
+    {
+      "user_id": "u1",
+      "book_id": "b1",
+      "value": 5
+    },
+    {
+      "user_id": "u2",
+      "book_id": "b1",
+      "value": 4
+    },
+    {
+      "user_id": "u1",
+      "book_id": "b2",
+      "value": 3
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rv1",
+      "user_id": "u1",
+      "book_id": "b1",
+      "text": "Очень понравилось!",
+      "ts": "2025-09-10T12:00:00"
+    },
+    {
+      "id": "rv2",
+      "user_id": "u2",
+      "book_id": "b2",
+      "text": "Было страшно, но круто",
+      "ts": "2025-09-10T13:00:00"
+    }
+  ],
+  "loans": [
+    {
+      "id": "l1",
+      "user_id": "u1",
+      "book_id": "b1",
+      "start": "2025-09-01",
+      "end": null,
+      "status": "active"
+    },
+    {
+      "id": "l2",
+      "user_id": "u2",
+      "book_id": "b2",
+      "start": "2025-09-05",
+      "end": "2025-09-08",
+      "status": "returned"
+    }
+  ],
+  "tags": [
+    {
+      "id": "t1",
+      "name": "sci-fi",
+      "parent_id": null
+    },
+    {
+      "id": "t2",
+      "name": "horror",
+      "parent_id": null
+    }
+  ],
+  "genres": [
+    {
+      "id": "g1",
+      "name": "fiction",
+      "parent_id": null
+    },
+    {
+      "id": "g2",
+      "name": "thriller",
+      "parent_id": null
+    }
+  ]
+}
