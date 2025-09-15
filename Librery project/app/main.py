@@ -40,48 +40,7 @@ if page == "Data":
             st.text_area("Preview (first 200 chars)", preview, height=120)
         except Exception as e:
             st.error(f"Cannot read file: {e}")
-
-    # Кнопка: создать демо seed.json
-    if st.button("Create demo seed.json"):
-        demo = {
-            "authors": [
-                {"id": "a1", "name": "Айзек Азимов"},
-                {"id": "a2", "name": "Стивен Кинг"}
-            ],
-            "books": [
-                {"id": "b1", "title": "Основание", "author_ids": ["a1"], "genres": ["g1"], "tags": ["t1"], "year": 1951},
-                {"id": "b2", "title": "Оно", "author_ids": ["a2"], "genres": ["g2"], "tags": ["t2"], "year": 1986}
-            ],
-            "users": [
-                {"id": "u1", "name": "User 1"},
-                {"id": "u2", "name": "User 2"}
-            ],
-            "ratings": [
-                {"user_id": "u1", "book_id": "b1", "value": 5},
-                {"user_id": "u2", "book_id": "b1", "value": 4},
-                {"user_id": "u1", "book_id": "b2", "value": 3}
-            ],
-            "reviews": [
-                {"id": "rv1", "user_id": "u1", "book_id": "b1", "text": "Очень понравилось!", "ts": "2025-09-10T12:00:00"},
-                {"id": "rv2", "user_id": "u2", "book_id": "b2", "text": "Было страшно, но круто", "ts": "2025-09-10T13:00:00"}
-            ],
-            "loans": [
-                {"id": "l1", "user_id": "u1", "book_id": "b1", "start": "2025-09-01", "end": None, "status": "active"},
-                {"id": "l2", "user_id": "u2", "book_id": "b2", "start": "2025-09-05", "end": "2025-09-08", "status": "returned"}
-            ],
-            "tags": [
-                {"id": "t1", "name": "sci-fi", "parent_id": None},
-                {"id": "t2", "name": "horror", "parent_id": None}
-            ],
-            "genres": [
-                {"id": "g1", "name": "fiction", "parent_id": None},
-                {"id": "g2", "name": "thriller", "parent_id": None}
-            ]
-        }
-        seed_path.parent.mkdir(parents=True, exist_ok=True)
-        seed_path.write_text(json.dumps(demo, ensure_ascii=False, indent=2), encoding="utf-8")
-        st.success(f"Demo seed.json written to: {seed_path}")
-
+            
     # Кнопка: загрузить seed
     if st.button("Load seed", type="primary"):
         try:
