@@ -80,12 +80,12 @@ elif page == "Overview":
 
 elif page == "Functional Core":
     st.header("Functional Core")
-    st.write("Здесь позже появятся предикаты и рекурсия (Лаба 2).")
+    st.write("")
 
 elif page == "Tests":
     st.header("Tests")
-    st.write("Запускай в терминале: `pytest -q`.")
+    st.write("PYTHONPATH=. pytest -q")
 
 elif page == "About":
     st.header("About")
-    st.write("Одностраничное демо: доменные модели, загрузка seed, чистые функции и базовый UI.")
+    st.write("labwork by aituar rinat")
