@@ -33,14 +33,13 @@ def load_seed(path: str) -> Dict[str, Tuple[Any, ...]]:
 
 
 def add_rating(ratings: Tuple[Rating, ...], r: Rating) -> Tuple[Rating, ...]:
-    """Добавляет новую оценку, возвращает новый кортеж"""
+
     return ratings + (r,)
 
 
 def update_loan(
     loans: Tuple[Loan, ...], loan_id: str, status: str, end: str | None
 ) -> Tuple[Loan, ...]:
-    """Обновляет статус/дату возврата по loan_id"""
     return tuple(
         Loan(
             id=l.id,
@@ -55,7 +54,6 @@ def update_loan(
 
 
 def avg_rating_for_book(ratings: Tuple[Rating, ...], book_id: str) -> float:
-    """Средний рейтинг для книги через filter+reduce"""
     filtered = tuple(filter(lambda r: r.book_id == book_id, ratings))
     if not filtered:
         return 0.0

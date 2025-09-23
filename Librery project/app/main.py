@@ -2,6 +2,7 @@
 import os, sys
 from pathlib import Path
 
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
@@ -11,6 +12,8 @@ import json
 import streamlit as st
 from core.transforms import load_seed, avg_rating_for_book
 from core.domain import Rating
+from core import functional as fn
+
 
 st.set_page_config(page_title="Library Recommender", page_icon="📚", layout="wide")
 
@@ -80,7 +83,75 @@ elif page == "Overview":
 
 elif page == "Functional Core":
     st.header("Functional Core")
-    st.write("")
+
+    DATA = st.session_state.get("DATA")
+    if not DATA:
+        st.info("Сначала загрузите seed во вкладке Data.")
+        st.stop()
+
+    # Распаковка
+    books  = DATA["books"]
+    ratings = DATA["ratings"]
+    reviews = DATA["reviews"]
+    loans   = DATA["loans"]
+    genres  = DATA["genres"]
+
+    # Диагностика (видно ли данные тут)
+    with st.expander("🔧 Debug (types & counts)"):
+        st.write({k: len(v) for k, v in DATA.items()})
+        st.write("Тип первого Book:", type(books[0]).__name__ if books else "—")
+        st.write("Тип первого Rating:", type(ratings[0]).__name__ if ratings else "—")
+
+    # --- Книги с высоким рейтингом ---
+    threshold = st.number_input("Порог рейтинга", 0.0, 5.0, 4.0, 0.1, key="thr")
+    if st.button("Показать книги с рейтингом ≥ threshold", key="btn_high"):
+        try:
+            res = fn.books_with_avg_ge(ratings, books, threshold)
+            table = [{"id": b.id, "title": b.title, "year": b.year} for b in res]
+            if table:
+                st.table(table)
+                st.metric("Найдено книг", len(table))
+            else:
+                st.warning("Нет книг с таким рейтингом")
+        except Exception as e:
+            st.exception(e)
+
+    # --- Топ-N книг ---
+    top_n = st.number_input("Сколько книг в топе?", min_value=1, max_value=50, value=5, step=1, key="topn")
+    if st.button("Показать Top-N книг", key="btn_top"):
+        try:
+            res = fn.top_books_by_avg(ratings, books, int(top_n))
+            rows = []
+            for bid, avg in res:
+                b = next((x for x in books if x.id == bid), None)
+                rows.append({"id": bid, "title": b.title if b else "(unknown)", "avg": round(avg, 2)})
+            st.dataframe(rows, use_container_width=True)
+        except Exception as e:
+            st.exception(e)
+
+    # --- Активные займы пользователя ---
+    user_id = st.text_input("User ID", "u1", key="uid")
+    if st.button("Проверить активные займы пользователя", key="btn_loans"):
+        try:
+            has_loan = fn.user_has_active_loan(loans, user_id)
+            (st.success if has_loan else st.error)(f"{user_id}: {'есть' if has_loan else 'нет'} активных займов")
+        except Exception as e:
+            st.exception(e)
+
+    # --- Рекурсивная проверка жанра ---
+    genre_id = st.text_input("Genre ID", "g1", key="gid")
+    book_id  = st.text_input("Book ID", "b1", key="bid")
+    if st.button("Принадлежит ли книга жанру (включая поджанры)?", key="btn_genre"):
+        try:
+            book = next((b for b in books if b.id == book_id), None)
+            if not book:
+                st.error(f"Книга {book_id} не найдена")
+            else:
+                ok = fn.book_in_genre_recursive(book, genres, genre_id)
+                (st.success if ok else st.error)(f"{book.title} → {genre_id}: {ok}")
+        except Exception as e:
+            st.exception(e)
+
 
 elif page == "Tests":
     st.header("Tests")
