@@ -19,7 +19,7 @@ st.set_page_config(page_title="Library Recommender", page_icon="📚", layout="w
 
 # Навигация
 st.sidebar.title("Menu")
-page = st.sidebar.radio("Navigation", ["Overview", "Data", "Functional Core", "Tests", "About"], index=1)
+page = st.sidebar.radio("Navigation", ["Overview", "Data", "Functional Core", "Reports", "Tests", "About"], index=1)
 
 # Состояние приложения
 if "DATA" not in st.session_state:
@@ -152,6 +152,69 @@ elif page == "Functional Core":
         except Exception as e:
             st.exception(e)
 
+elif page == "Reports":
+    st.header("📊 Reports")
+    
+    # Прямые импорты чтобы избежать циклических зависимостей
+    from core.transforms import load_seed
+    
+    try:
+        from core.memo import recommend_for_user, measure_recommendation_performance
+        memo_available = True
+    except ImportError as e:
+        st.error(f"Модуль рекомендаций недоступен: {e}")
+        memo_available = False
+    
+    # Загружаем данные
+    data = load_seed("data/seed.json")
+    books = data["books"]
+    ratings = data["ratings"]
+    users = data["users"]
+    
+    if not books:
+        st.warning("Сначала загрузите данные во вкладке 'Data'")
+    elif not memo_available:
+        st.warning("Модуль рекомендаций не загружен")
+    else:
+        st.subheader("Рекомендации с кэшированием")
+        
+        # Выбор пользователя
+        user_options = [f"{user.id} - {user.name}" for user in users]
+        selected_user = st.selectbox("Выберите пользователя:", user_options, key="user_select_reports")
+        
+        if selected_user and st.button("Получить рекомендации", key="get_recommendations"):
+            user_id = selected_user.split(" - ")[0]
+            
+            with st.spinner("Формируем рекомендации..."):
+                recommendations = recommend_for_user(user_id, tuple(ratings), tuple(books))
+                
+                if recommendations:
+                    st.success(f"Найдено {len(recommendations)} рекомендаций!")
+                    for i, book_id in enumerate(recommendations, 1):
+                        book = next((b for b in books if b.id == book_id), None)
+                        if book:
+                            st.write(f"{i}. **{book.title}**")
+                            st.write(f"   Жанры: {', '.join(book.genres)}")
+                            st.write("---")
+                else:
+                    st.warning("Рекомендации не найдены")
+        
+        # Измерение производительности
+        st.subheader("Измерение производительности")
+        if st.button("Измерить производительность кэша", key="measure_perf"):
+            with st.spinner("Измеряем..."):
+                perf_data = measure_recommendation_performance()
+                
+                if "error" in perf_data:
+                    st.error(perf_data["error"])
+                else:
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Первый вызов", f"{perf_data['first_call_avg_ms']}ms")
+                    with col2:
+                        st.metric("С кэшем", f"{perf_data['second_call_avg_ms']}ms")
+                    with col3:
+                        st.metric("Ускорение", f"{perf_data['speedup']}x")
 
 elif page == "Tests":
     st.header("Tests")
@@ -160,3 +223,4 @@ elif page == "Tests":
 elif page == "About":
     st.header("About")
     st.write("labwork by aituar rinat")
+

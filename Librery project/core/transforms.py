@@ -12,13 +12,26 @@ def load_seed(path: str) -> Dict[str, Tuple[Any, ...]]:
         raw = json.load(f)
 
     authors = tuple(Author(**a) for a in raw.get("authors", []))
-    books   = tuple(Book(**b) for b in raw.get("books", []))
-    users   = tuple(User(**u) for u in raw.get("users", []))
+    
+    # Преобразуем списки в кортежи для Book
+    books = tuple(
+        Book(
+            id=b["id"],
+            title=b["title"], 
+            author_ids=tuple(b["author_ids"]),  # список -> кортеж
+            genres=tuple(b["genres"]),          # список -> кортеж
+            tags=tuple(b["tags"]),              # список -> кортеж
+            year=b["year"]
+        )
+        for b in raw.get("books", [])
+    )
+    
+    users = tuple(User(**u) for u in raw.get("users", []))
     ratings = tuple(Rating(**r) for r in raw.get("ratings", []))
     reviews = tuple(Review(**rv) for rv in raw.get("reviews", []))
-    loans   = tuple(Loan(**l) for l in raw.get("loans", []))
-    tags    = tuple(Tag(**t) for t in raw.get("tags", []))
-    genres  = tuple(Genre(**g) for g in raw.get("genres", []))
+    loans = tuple(Loan(**l) for l in raw.get("loans", []))
+    tags = tuple(Tag(**t) for t in raw.get("tags", []))
+    genres = tuple(Genre(**g) for g in raw.get("genres", []))
 
     return {
         "authors": authors,
