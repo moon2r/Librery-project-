@@ -8,7 +8,6 @@ streamlit run app/main.py
 PYTHONPATH=. pytest -q
 
 *github
-cd "/Users/aituarrinat/Documents/prog/Librery project"
 
 git status -sb          
 git add -A              
